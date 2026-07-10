@@ -51,3 +51,7 @@ All Qwen deployment and benchmarking work belongs on the explicitly idle GB10 no
 - Preserve exact model revision, image digest, runtime commit, benchmark command, and telemetry method.
 - Report requested and effective runtime modes separately.
 - Credit Unsloth, Qwen, vLLM, FlashInfer, NVIDIA CUTLASS DSL, and relevant upstream contributors.
+
+## Session resumption
+
+Read [`docs/NEW_SESSION.md`](docs/NEW_SESSION.md) before resuming work. It records the completed release state, immutable GHCR digest, known-good profile, validation commands, and protected Hy3 boundary.
