@@ -2,11 +2,12 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-MODEL_HOST="${MODEL_HOST:-${HOME}/models/Qwen3.6-35B-A3B-NVFP4-Fast}"
+MODEL_HOST="${MODEL_HOST:-${HOME}/models/llm/nvfp4/unsloth/Qwen3.6-35B-A3B-NVFP4-Fast}"
 IMAGE="${IMAGE:-qwen36-35b-a3b-nvfp4-fast-sm121-vllm:dev}"
 CONTAINER="${CONTAINER:-qwen36-fast-vllm}"
 PORT="${PORT:-18080}"
 CACHE_ROOT="${CACHE_ROOT:-${HOME}/.cache/qwen36-fast-vllm}"
+[[ -f "$MODEL_HOST/config.json" ]] || { echo "ERROR: MODEL_HOST must contain config.json: $MODEL_HOST" >&2; exit 2; }
 KV_CACHE_DTYPE="${KV_CACHE_DTYPE:-fp8}"
 SPECULATIVE_CONFIG="${SPECULATIVE_CONFIG-}"
 if [[ "${ENABLE_MTP:-1}" == "1" && -z "$SPECULATIVE_CONFIG" ]]; then
