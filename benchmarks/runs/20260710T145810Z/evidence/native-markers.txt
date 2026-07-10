@@ -1,0 +1,7 @@
+quantization=compressed-tensors
+Selected CutlassFP8ScaledMMLinearKernel
+Using FlashInferCutlassNvFp4LinearKernel
+Using 'FLASHINFER_B12X' NvFp4 MoE backend
+Using TRITON Unquantized MoE backend
+Using FLASHINFER attention backend
+setting cudagraph_mode=PIECEWISE

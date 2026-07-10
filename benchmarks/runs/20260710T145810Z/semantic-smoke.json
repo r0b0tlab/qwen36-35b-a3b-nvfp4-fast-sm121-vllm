@@ -1,0 +1,37 @@
+{
+  "id": "chatcmpl-8e2a747aff060290",
+  "object": "chat.completion",
+  "created": 1783698461,
+  "model": "Qwen3.6-35B-A3B-NVFP4-Fast",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "To compute $19 \\times 23$, we can use the distributive property or standard multiplication.\n\n**Method 1: Distributive Property**\n$$19 \\times 23 = (20 - 1) \\times 23$$\n$$= (20 \\times 23) - (1 \\times 23)$$\n$$= 460 - 23$$\n$$= 437$$\n\n**Method 2: Standard Multiplication**\n$$\\begin{array}{r@{\\quad}l} 23 \\\\ \\times 19 \\\\ \\hline 207 & (9 \\times 23) \\\\ 230 & (10 \\times 23) \\\\ \\hline 437 \\end{array}$$\n\n**Answer:**\n437",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.24.1.dev0+gee0da84ab.d20260702-36a8acb3",
+  "usage": {
+    "prompt_tokens": 27,
+    "total_tokens": 212,
+    "completion_tokens": 185,
+    "prompt_tokens_details": null
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null
+}

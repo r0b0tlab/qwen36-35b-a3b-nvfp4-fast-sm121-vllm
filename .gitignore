@@ -1,0 +1,12 @@
+.venv-bench/
+benchmarks/runs/**/raw/
+benchmarks/runs/**/samples_*.jsonl
+benchmarks/runs/*/telemetry.jsonl
+benchmarks/runs/**/run.log
+benchmarks/runs/**/c*-r*.log
+benchmarks/runs/**/progress.jsonl
+benchmarks/runs/*/server.log
+.release-cache/
+*.pyc
+__pycache__/
+.env

@@ -1,0 +1,47 @@
+{
+  "generated_at_utc": "2026-07-10T15:48:06.675848+00:00",
+  "model": "unsloth/Qwen3.6-35B-A3B-NVFP4-Fast",
+  "served_model": "Qwen3.6-35B-A3B-NVFP4-Fast",
+  "model_revision": "11fb65d632976b5f00cb42f157562238cf0c71e0",
+  "max_model_len": 65536,
+  "hardware": {
+    "gpu": "NVIDIA GB10",
+    "compute_capability": "12.1",
+    "power_limit_w": null,
+    "architecture": "aarch64"
+  },
+  "runtime": {
+    "torch": "2.11.0+cu130",
+    "cuda": "13.0",
+    "vllm": "0.24.1.dev0+gee0da84ab.d20260702",
+    "flashinfer": "0.6.12"
+  },
+  "image_id": "sha256:f9d8f77b6656ddf60e8792242530dd2b9c43ef78bff364b90b82fd01d9cfd444",
+  "profile": {
+    "KV_CACHE_DTYPE": "fp8",
+    "MOE_BACKEND": "flashinfer_b12x",
+    "LINEAR_BACKEND": "auto",
+    "SPECULATIVE_CONFIG": "{\"method\":\"mtp\",\"num_speculative_tokens\":2,\"moe_backend\":\"triton\"}",
+    "MAX_MODEL_LEN": "65536",
+    "MAX_NUM_SEQS": "32",
+    "MAX_NUM_BATCHED_TOKENS": "32768",
+    "GPU_MEMORY_UTILIZATION": "0.90",
+    "ATTENTION_BACKEND": "flashinfer",
+    "LANGUAGE_MODEL_ONLY": "1"
+  },
+  "effective_cuda_graph_mode": "PIECEWISE",
+  "kv_cache_tokens": 5960499,
+  "mtp_draft_tokens_total": 474532.0,
+  "mtp_accepted_tokens_total": 409662.0,
+  "mtp_acceptance_rate": 0.8632968904099196,
+  "native_marker_gate": {
+    "compressed_tensors": true,
+    "fp8_dense": true,
+    "nvfp4_dense": true,
+    "target_moe_b12x": true,
+    "draft_moe_triton": true,
+    "flashinfer_attention": true,
+    "effective_piecewise": true
+  },
+  "semantic_profile": "FP8 KV + MTP K=2; NVFP4 KV rejected by semantic gate"
+}

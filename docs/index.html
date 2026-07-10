@@ -1,0 +1,911 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Qwen3.6 35B A3B NVFP4 Fast · GB10 Benchmark</title><style>
+:root{--bg:#06101b;--panel:#0b1928;--panel2:#10243a;--ink:#eafaff;--muted:#92afc3;--cyan:#62f6ff;--violet:#b58cff;--lime:#78f7a8;--amber:#ffc86a;--red:#ff718b;--line:#1d3b55}*{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;background:radial-gradient(circle at 80% -10%,#183557 0,transparent 38%),radial-gradient(circle at 0 20%,#112b35 0,transparent 30%),var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.5}.wrap{max-width:1180px;margin:auto;padding:44px 28px 80px}.hero{position:relative;overflow:hidden;border:1px solid #28506d;background:linear-gradient(135deg,rgba(18,51,76,.96),rgba(8,20,35,.97));border-radius:28px;padding:44px;box-shadow:0 30px 80px #0008}.hero:after{content:"";position:absolute;right:-90px;top:-90px;width:360px;height:360px;border:1px solid #62f6ff55;border-radius:50%;box-shadow:0 0 80px #62f6ff22 inset}.brand{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);font-weight:800}.hero h1{max-width:850px;font-size:clamp(36px,6vw,72px);line-height:1.02;margin:18px 0;background:linear-gradient(90deg,#fff,var(--cyan) 55%,var(--violet));-webkit-background-clip:text;color:transparent}.subtitle{max-width:820px;color:#c0d8e8;font-size:18px}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.badge{border:1px solid #335a74;background:#0b2033aa;border-radius:999px;padding:8px 13px;font-size:12px;color:#d7f6ff}.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;margin:22px 0}.kpi,.panel{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel2),var(--panel));border-radius:20px;padding:22px;box-shadow:0 18px 48px #0004}.kpi .v{font-size:34px;font-weight:850;letter-spacing:-.04em}.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em}.kpi:nth-child(1) .v{color:var(--lime)}.kpi:nth-child(2) .v{color:var(--cyan)}.kpi:nth-child(3) .v{color:var(--violet)}.kpi:nth-child(4) .v{color:var(--amber)}h2{font-size:29px;margin:44px 0 15px;letter-spacing:-.025em}h3{margin:0 0 10px}.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}.callout{border-left:4px solid var(--cyan);padding:18px 22px;background:#0c1c2c;border-radius:8px 18px 18px 8px;color:#cde5f2}.callout.warn{border-color:var(--amber)}.stack{display:grid;gap:10px}.step{display:grid;grid-template-columns:42px 1fr;gap:14px;align-items:start}.num{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#173550;color:var(--cyan);font-weight:900}.step p{margin:3px 0;color:#b8cfde}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.chart{width:100%;height:auto}.grid line{stroke:#21425b;stroke-width:1}.grid text,.xlabel,.dotlabel{fill:#7899ad;font-size:11px}.dotlabel,.xlabel{text-anchor:middle}.line{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.area{fill:#62f6ff12}.chart-title{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}.status{display:inline-flex;align-items:center;gap:8px;color:var(--lime);font-weight:750}.status:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--lime);box-shadow:0 0 16px var(--lime)}code{color:#bdefff;background:#06111d;padding:2px 6px;border-radius:6px}details{border:1px solid var(--line);border-radius:16px;padding:14px 18px;background:#081522}summary{cursor:pointer;color:var(--cyan);font-weight:700}pre{white-space:pre-wrap;word-break:break-word;color:#9fc0d4;font-size:11px}.footer{margin-top:50px;color:#6f8ea2;font-size:12px;text-align:center}.empty{height:180px;display:grid;place-items:center;color:var(--muted)}@media(max-width:820px){.grid4,.two{grid-template-columns:1fr 1fr}.hero{padding:30px}}@media(max-width:520px){.grid4,.two{grid-template-columns:1fr}.wrap{padding:18px}.hero h1{font-size:38px}}
+</style></head><body><main class="wrap">
+<section class="hero"><div class="brand">DSpark · r0b0tlab performance dossier</div><h1>Qwen3.6 35B-A3B<br>NVFP4 Fast on GB10</h1><p class="subtitle">A correctness-first, SM121-native serving study: mixed FP8/NVFP4 weights, FlashInfer B12X experts, FP8 KV cache, and trained MTP speculative decoding.</p><div class="badges"><span class="badge">NVIDIA GB10 · SM121</span><span class="badge">vLLM 0.24 · CUDA 13</span><span class="badge">FlashInfer B12X</span><span class="badge">MTP ×2</span><span class="badge">65,536-token profile</span></div></section>
+<section class="grid4"><div class="kpi"><div class="l">GSM8K 0-shot</div><div class="v">86.7%</div></div><div class="kpi"><div class="l">Peak output rate</div><div class="v">344</div><small>tok/s at c32</small></div><div class="kpi"><div class="l">MTP acceptance</div><div class="v">86.3%</div></div><div class="kpi"><div class="l">Peak board power</div><div class="v">69.3 W</div></div></section>
+<h2>Executive finding</h2><div class="callout"><span class="status">Production profile validated</span><p>The model card's vLLM 0.24 + two-token MTP path is compatible on GB10 when KV cache is FP8. An experimental NVFP4-KV profile reached HTTP readiness but corrupted semantics; it was rejected before benchmarking. The published numbers below use the coherent profile only.</p></div>
+<h2>What actually runs</h2><div class="two"><div class="panel stack"><div class="step"><div class="num">01</div><div><h3>Mixed checkpoint</h3><p>Compressed-tensors FP8 dense groups plus NVFP4 expert weights.</p></div></div><div class="step"><div class="num">02</div><div><h3>Native target kernels</h3><p>FlashInferCutlass NVFP4 GEMM and explicit FlashInfer B12X target MoE on <code>sm_121a</code>.</p></div></div><div class="step"><div class="num">03</div><div><h3>Correct MTP split</h3><p>Two draft tokens; Triton handles the unquantized draft MoE while B12X stays on the quantized target.</p></div></div></div><div class="panel"><h3>Resolved runtime</h3><table><tr><td>KV cache</td><td>FP8</td></tr><tr><td>Attention</td><td>FlashInfer</td></tr><tr><td>Target MoE</td><td>FLASHINFER_B12X</td></tr><tr><td>Draft MoE</td><td>TRITON</td></tr><tr><td>CUDA graphs</td><td>PIECEWISE (effective)</td></tr><tr><td>GPU KV capacity</td><td>5,960,499 tokens</td></tr></table></div></div>
+<h2>Concurrency scaling</h2><div class="panel"><div class="chart-title">Output throughput · tokens/second</div><svg class="chart" viewBox="0 0 760 260" role="img"><g class="grid"><line x1="42" y1="42" x2="718" y2="42"/><text x="8" y="46">385</text><line x1="42" y1="130.0" x2="718" y2="130.0"/><text x="8" y="134.0">193</text><line x1="42" y1="218" x2="718" y2="218"/><text x="8" y="222">0</text></g><path class="area" d="M42.0,181.2 L177.2,159.4 L312.4,133.1 L447.6,95.3 L582.8,87.6 L718.0,60.9 L718.0,218 L42.0,218 Z"/><path class="line" style="stroke:#62f6ff" d="M42.0,181.2 L177.2,159.4 L312.4,133.1 L447.6,95.3 L582.8,87.6 L718.0,60.9"/><g class="dots" style="fill:#62f6ff"><circle cx="42.0" cy="181.2" r="5"/><text class="dotlabel" x="42.0" y="169.2">80.6</text><text class="xlabel" x="42.0" y="248">c1</text><circle cx="177.2" cy="159.4" r="5"/><text class="dotlabel" x="177.2" y="147.4">128.4</text><text class="xlabel" x="177.2" y="248">c2</text><circle cx="312.4" cy="133.1" r="5"/><text class="dotlabel" x="312.4" y="121.1">185.9</text><text class="xlabel" x="312.4" y="248">c4</text><circle cx="447.6" cy="95.3" r="5"/><text class="dotlabel" x="447.6" y="83.3">268.8</text><text class="xlabel" x="447.6" y="248">c8</text><circle cx="582.8" cy="87.6" r="5"/><text class="dotlabel" x="582.8" y="75.6">285.6</text><text class="xlabel" x="582.8" y="248">c16</text><circle cx="718.0" cy="60.9" r="5"/><text class="dotlabel" x="718.0" y="48.9">344.2</text><text class="xlabel" x="718.0" y="248">c32</text></g></svg></div><div class="panel" style="margin-top:18px;overflow:auto"><table><thead><tr><th>Concurrency</th><th>Output tok/s</th><th>Total tok/s</th><th>Mean TTFT ms</th><th>P99 TTFT ms</th><th>Mean TPOT ms</th><th>P99 ITL ms</th></tr></thead><tbody><tr><td>1</td><td>80.6</td><td>404.7</td><td>468.8</td><td>1,177.9</td><td>11.51</td><td>39.31</td></tr><tr><td>2</td><td>128.4</td><td>644.8</td><td>457.9</td><td>670.0</td><td>14.67</td><td>48.84</td></tr><tr><td>4</td><td>185.9</td><td>933.2</td><td>865.7</td><td>1,198.5</td><td>19.39</td><td>59.39</td></tr><tr><td>8</td><td>268.8</td><td>1,349.6</td><td>1,560.7</td><td>2,531.7</td><td>25.13</td><td>331.39</td></tr><tr><td>16</td><td>285.6</td><td>1,433.9</td><td>8,105.8</td><td>14,340.9</td><td>38.02</td><td>390.28</td></tr><tr><td>32</td><td>344.2</td><td>1,727.9</td><td>13,080.1</td><td>20,928.4</td><td>64.21</td><td>1,235.71</td></tr></tbody></table></div>
+<h2>Latency profile</h2><div class="two"><div class="panel"><div class="chart-title">Mean time to first token · milliseconds</div><svg class="chart" viewBox="0 0 760 260" role="img"><g class="grid"><line x1="42" y1="42" x2="718" y2="42"/><text x="8" y="46">14,650</text><line x1="42" y1="130.0" x2="718" y2="130.0"/><text x="8" y="134.0">7,325</text><line x1="42" y1="218" x2="718" y2="218"/><text x="8" y="222">0</text></g><path class="area" d="M42.0,212.4 L177.2,212.5 L312.4,207.6 L447.6,199.2 L582.8,120.6 L718.0,60.9 L718.0,218 L42.0,218 Z"/><path class="line" style="stroke:#b58cff" d="M42.0,212.4 L177.2,212.5 L312.4,207.6 L447.6,199.2 L582.8,120.6 L718.0,60.9"/><g class="dots" style="fill:#b58cff"><circle cx="42.0" cy="212.4" r="5"/><text class="dotlabel" x="42.0" y="200.4">468.8</text><text class="xlabel" x="42.0" y="248">c1</text><circle cx="177.2" cy="212.5" r="5"/><text class="dotlabel" x="177.2" y="200.5">457.9</text><text class="xlabel" x="177.2" y="248">c2</text><circle cx="312.4" cy="207.6" r="5"/><text class="dotlabel" x="312.4" y="195.6">865.7</text><text class="xlabel" x="312.4" y="248">c4</text><circle cx="447.6" cy="199.2" r="5"/><text class="dotlabel" x="447.6" y="187.2">1,560.7</text><text class="xlabel" x="447.6" y="248">c8</text><circle cx="582.8" cy="120.6" r="5"/><text class="dotlabel" x="582.8" y="108.6">8,105.8</text><text class="xlabel" x="582.8" y="248">c16</text><circle cx="718.0" cy="60.9" r="5"/><text class="dotlabel" x="718.0" y="48.9">13,080.1</text><text class="xlabel" x="718.0" y="248">c32</text></g></svg></div><div class="panel"><div class="chart-title">Mean time per output token · milliseconds</div><svg class="chart" viewBox="0 0 760 260" role="img"><g class="grid"><line x1="42" y1="42" x2="718" y2="42"/><text x="8" y="46">72</text><line x1="42" y1="130.0" x2="718" y2="130.0"/><text x="8" y="134.0">36</text><line x1="42" y1="218" x2="718" y2="218"/><text x="8" y="222">0</text></g><path class="area" d="M42.0,189.8 L177.2,182.1 L312.4,170.5 L447.6,156.5 L582.8,125.0 L718.0,60.9 L718.0,218 L42.0,218 Z"/><path class="line" style="stroke:#78f7a8" d="M42.0,189.8 L177.2,182.1 L312.4,170.5 L447.6,156.5 L582.8,125.0 L718.0,60.9"/><g class="dots" style="fill:#78f7a8"><circle cx="42.0" cy="189.8" r="5"/><text class="dotlabel" x="42.0" y="177.8">11.5</text><text class="xlabel" x="42.0" y="248">c1</text><circle cx="177.2" cy="182.1" r="5"/><text class="dotlabel" x="177.2" y="170.1">14.7</text><text class="xlabel" x="177.2" y="248">c2</text><circle cx="312.4" cy="170.5" r="5"/><text class="dotlabel" x="312.4" y="158.5">19.4</text><text class="xlabel" x="312.4" y="248">c4</text><circle cx="447.6" cy="156.5" r="5"/><text class="dotlabel" x="447.6" y="144.5">25.1</text><text class="xlabel" x="447.6" y="248">c8</text><circle cx="582.8" cy="125.0" r="5"/><text class="dotlabel" x="582.8" y="113.0">38.0</text><text class="xlabel" x="582.8" y="248">c16</text><circle cx="718.0" cy="60.9" r="5"/><text class="dotlabel" x="718.0" y="48.9">64.2</text><text class="xlabel" x="718.0" y="248">c32</text></g></svg></div></div>
+<h2>Long-context depth sweep</h2><div class="panel" style="overflow:auto"><table><thead><tr><th>Context depth</th><th>Prefill tok/s</th><th>Decode tok/s</th><th>TTFR ms</th><th>E2E TTFT ms</th></tr></thead><tbody><tr><td>0</td><td>5,081.5</td><td>79.7</td><td>405.6</td><td>405.6</td></tr><tr><td>4,096</td><td>6,571.4</td><td>86.7</td><td>939.5</td><td>939.5</td></tr><tr><td>8,192</td><td>6,211.0</td><td>85.3</td><td>1,651.2</td><td>1,651.2</td></tr><tr><td>16,384</td><td>5,526.9</td><td>87.0</td><td>3,339.0</td><td>3,340.1</td></tr></tbody></table><p style="color:var(--muted)">llama-benchy 0.4.0 · 2,048-token prompt · 128-token exact generation · concurrency 1 · three measured runs per depth. Coherence test passed.</p></div>
+<h2>Quality gate</h2><div class="two"><div class="panel"><div class="kpi"><div class="l">Flexible-extract exact match</div><div class="v">86.73%</div></div><p>Full GSM8K, 1,319 questions, 0-shot, greedy decoding, chat template applied, thinking disabled. This is the publication metric; strict string matching is retained in raw data but is not the primary gate.</p></div><div class="panel"><h3>Semantic probes</h3><p class="status">Passed</p><p>Deterministic arithmetic, exact-string, and word-problem probes passed under FP8 KV with MTP. MTP counters were non-zero and acceptance was measured from server Prometheus metrics.</p><div class="callout warn"><strong>Rejected profile:</strong> NVFP4 KV + MTP changed prompt operands and produced punctuation degeneration. Readiness alone was not accepted as correctness.</div></div></div>
+<h2>Thermal & power envelope</h2><div class="grid4"><div class="kpi"><div class="l">Peak GPU utilization</div><div class="v">96%</div></div><div class="kpi"><div class="l">Peak temperature</div><div class="v">81°C</div></div><div class="kpi"><div class="l">C1 mean TPOT</div><div class="v">11.51 ms</div></div><div class="kpi"><div class="l">C1 P99 TTFT</div><div class="v">1,177.9 ms</div></div></div>
+<div class="panel" style="overflow:auto"><table><thead><tr><th>Load</th><th>Mean active power W</th><th>Output tokens/J</th><th>J/1K output tokens</th></tr></thead><tbody><tr><td>c1</td><td>36.9</td><td>2.18</td><td>458.1</td></tr><tr><td>c2</td><td>38.9</td><td>3.30</td><td>302.7</td></tr><tr><td>c4</td><td>41.6</td><td>4.47</td><td>223.9</td></tr><tr><td>c8</td><td>45.1</td><td>5.96</td><td>167.9</td></tr><tr><td>c16</td><td>43.7</td><td>6.53</td><td>153.0</td></tr><tr><td>c32</td><td>44.7</td><td>7.69</td><td>130.0</td></tr></tbody></table><p style="color:var(--muted)">Board power is sampled every two seconds during stable repetitions 2 and 3. Samples below 10% GPU utilization are excluded so client bookkeeping and post-generation idle time do not inflate efficiency.</p></div>
+<h2>Methodology & reproducibility</h2><div class="panel"><p><strong>Concurrency:</strong> random 2,048-token input / exact 512-token output, concurrencies 1–32, three repetitions; first repetition dropped and the final two averaged. <strong>Telemetry:</strong> 2-second nvidia-smi and host-memory sampling with benchmark phase labels. <strong>Runtime:</strong> one GB10, text-only model path, 65,536 maximum sequence length, no Marlin or emulation fallback.</p><p>Run ID: <code>20260710T145810Z</code> · Model revision: <code>11fb65d632976b5f00cb42f157562238cf0c71e0</code> · Image digest: <code>sha256:f9d8f77b6656ddf60e8792242530dd2b9c43ef78bff364b90b82fd01d9cfd444</code></p></div>
+<h2>Raw evidence</h2><details><summary>Embedded machine-readable benchmark payload</summary><pre>{
+  &quot;concurrency&quot;: {
+    &quot;method&quot;: &quot;vllm bench serve random 2048 input / 512 output / ignore_eos; three reps, first dropped&quot;,
+    &quot;rows&quot;: [
+      {
+        &quot;completed&quot;: 16,
+        &quot;concurrency&quot;: 1,
+        &quot;failed&quot;: 0,
+        &quot;mean_e2el_ms&quot;: 6351.265492692619,
+        &quot;mean_itl_ms&quot;: 29.27366407614555,
+        &quot;mean_tpot_ms&quot;: 11.511627217103332,
+        &quot;mean_ttft_ms&quot;: 468.8239847528166,
+        &quot;output_throughput_tok_s&quot;: 80.61112738091244,
+        &quot;p50_ttft_ms&quot;: 359.4497682497604,
+        &quot;p99_e2el_ms&quot;: 7630.722727957909,
+        &quot;p99_itl_ms&quot;: 39.308217814832446,
+        &quot;p99_tpot_ms&quot;: 13.11026588420197,
+        &quot;p99_ttft_ms&quot;: 1177.8901343361938,
+        &quot;repetitions&quot;: 3,
+        &quot;request_throughput_rps&quot;: 0.1574436081658446,
+        &quot;total_throughput_tok_s&quot;: 404.6891143392828,
+        &quot;warmup_rep_dropped&quot;: 1
+      },
+      {
+        &quot;completed&quot;: 16,
+        &quot;concurrency&quot;: 2,
+        &quot;failed&quot;: 0,
+        &quot;mean_e2el_ms&quot;: 7955.629986936401,
+        &quot;mean_itl_ms&quot;: 38.257261300721574,
+        &quot;mean_tpot_ms&quot;: 14.67265493848161,
+        &quot;mean_ttft_ms&quot;: 457.9033133722987,
+        &quot;output_throughput_tok_s&quot;: 128.44152732659825,
+        &quot;p50_ttft_ms&quot;: 392.54866773990216,
+        &quot;p99_e2el_ms&quot;: 8700.36453283843,
+        &quot;p99_itl_ms&quot;: 48.83829324913677,
+        &quot;p99_tpot_ms&quot;: 15.882731904824189,
+        &quot;p99_ttft_ms&quot;: 670.0164118401881,
+        &quot;repetitions&quot;: 3,
+        &quot;request_throughput_rps&quot;: 0.2508623580597622,
+        &quot;total_throughput_tok_s&quot;: 644.8103335978612,
+        &quot;warmup_rep_dropped&quot;: 1
+      },
+      {
+        &quot;completed&quot;: 16,
+        &quot;concurrency&quot;: 4,
+        &quot;failed&quot;: 0,
+        &quot;mean_e2el_ms&quot;: 10775.998791808888,
+        &quot;mean_itl_ms&quot;: 50.22570354521301,
+        &quot;mean_tpot_ms&quot;: 19.39396721036335,
+        &quot;mean_ttft_ms&quot;: 865.6815473132156,
+        &quot;output_throughput_tok_s&quot;: 185.88336935944793,
+        &quot;p50_ttft_ms&quot;: 908.9706567465328,
+        &quot;p99_e2el_ms&quot;: 12334.23633333543,
+        &quot;p99_itl_ms&quot;: 59.388495854363995,
+        &quot;p99_tpot_ms&quot;: 21.840307539881223,
+        &quot;p99_ttft_ms&quot;: 1198.4544758341508,
+        &quot;repetitions&quot;: 3,
+        &quot;request_throughput_rps&quot;: 0.36305345578017173,
+        &quot;total_throughput_tok_s&quot;: 933.183526400959,
+        &quot;warmup_rep_dropped&quot;: 1
+      },
+      {
+        &quot;completed&quot;: 32,
+        &quot;concurrency&quot;: 8,
+        &quot;failed&quot;: 0,
+        &quot;mean_e2el_ms&quot;: 14402.530088435924,
+        &quot;mean_itl_ms&quot;: 64.35563425269441,
+        &quot;mean_tpot_ms&quot;: 25.13075057791019,
+        &quot;mean_ttft_ms&quot;: 1560.7165431238172,
+        &quot;output_throughput_tok_s&quot;: 268.814985563795,
+        &quot;p50_ttft_ms&quot;: 1667.04469974502,
+        &quot;p99_e2el_ms&quot;: 18105.445071251597,
+        &quot;p99_itl_ms&quot;: 331.3894161800272,
+        &quot;p99_tpot_ms&quot;: 30.68727673581686,
+        &quot;p99_ttft_ms&quot;: 2531.7369869429967,
+        &quot;repetitions&quot;: 3,
+        &quot;request_throughput_rps&quot;: 0.5250292686792871,
+        &quot;total_throughput_tok_s&quot;: 1349.554920810815,
+        &quot;warmup_rep_dropped&quot;: 1
+      },
+      {
+        &quot;completed&quot;: 64,
+        &quot;concurrency&quot;: 16,
+        &quot;failed&quot;: 0,
+        &quot;mean_e2el_ms&quot;: 27534.22060578032,
+        &quot;mean_itl_ms&quot;: 100.4842449000925,
+        &quot;mean_tpot_ms&quot;: 38.020437089808055,
+        &quot;mean_ttft_ms&quot;: 8105.777252888402,
+        &quot;output_throughput_tok_s&quot;: 285.6127927303555,
+        &quot;p50_ttft_ms&quot;: 8253.131282741379,
+        &quot;p99_e2el_ms&quot;: 39022.79275432201,
+        &quot;p99_itl_ms&quot;: 390.28119393158704,
+        &quot;p99_tpot_ms&quot;: 48.807489334260154,
+        &quot;p99_ttft_ms&quot;: 14340.86316274028,
+        &quot;repetitions&quot;: 3,
+        &quot;request_throughput_rps&quot;: 0.5578374858014756,
+        &quot;total_throughput_tok_s&quot;: 1433.921257252693,
+        &quot;warmup_rep_dropped&quot;: 1
+      },
+      {
+        &quot;completed&quot;: 128,
+        &quot;concurrency&quot;: 32,
+        &quot;failed&quot;: 0,
+        &quot;mean_e2el_ms&quot;: 45891.212069625224,
+        &quot;mean_itl_ms&quot;: 170.27518398921194,
+        &quot;mean_tpot_ms&quot;: 64.20951522081245,
+        &quot;mean_ttft_ms&quot;: 13080.149791790063,
+        &quot;output_throughput_tok_s&quot;: 344.1799223103609,
+        &quot;p50_ttft_ms&quot;: 12651.668718746805,
+        &quot;p99_e2el_ms&quot;: 60415.65840987094,
+        &quot;p99_itl_ms&quot;: 1235.7053833504324,
+        &quot;p99_tpot_ms&quot;: 82.69231726511083,
+        &quot;p99_ttft_ms&quot;: 20928.356883552624,
+        &quot;repetitions&quot;: 3,
+        &quot;request_throughput_rps&quot;: 0.6722264107624236,
+        &quot;total_throughput_tok_s&quot;: 1727.8739605634646,
+        &quot;warmup_rep_dropped&quot;: 1
+      }
+    ]
+  },
+  &quot;energy&quot;: {
+    &quot;method&quot;: &quot;Board-power samples at GPU utilization &gt;=10% from stable repetitions 2 and 3, joined to output throughput from those repetitions. Idle/client-bookkeeping samples are excluded.&quot;,
+    &quot;rows&quot;: [
+      {
+        &quot;active_power_samples&quot;: 72,
+        &quot;active_utilization_threshold_pct&quot;: 10.0,
+        &quot;concurrency&quot;: 1,
+        &quot;joules_per_1k_output_tokens&quot;: 458.13912186837706,
+        &quot;mean_active_power_w&quot;: 36.93111111111111,
+        &quot;output_throughput_tok_s&quot;: 80.61112738091244,
+        &quot;output_tokens_per_joule&quot;: 2.182743084506324,
+        &quot;source_phases&quot;: [
+          &quot;concurrency-c1-rep2&quot;,
+          &quot;concurrency-c1-rep3&quot;
+        ]
+      },
+      {
+        &quot;active_power_samples&quot;: 33,
+        &quot;active_utilization_threshold_pct&quot;: 10.0,
+        &quot;concurrency&quot;: 2,
+        &quot;joules_per_1k_output_tokens&quot;: 302.74594459060904,
+        &quot;mean_active_power_w&quot;: 38.88515151515151,
+        &quot;output_throughput_tok_s&quot;: 128.44152732659825,
+        &quot;output_tokens_per_joule&quot;: 3.3030995719934713,
+        &quot;source_phases&quot;: [
+          &quot;concurrency-c2-rep2&quot;,
+          &quot;concurrency-c2-rep3&quot;
+        ]
+      },
+      {
+        &quot;active_power_samples&quot;: 21,
+        &quot;active_utilization_threshold_pct&quot;: 10.0,
+        &quot;concurrency&quot;: 4,
+        &quot;joules_per_1k_output_tokens&quot;: 223.93714198119972,
+        &quot;mean_active_power_w&quot;: 41.62619047619048,
+        &quot;output_throughput_tok_s&quot;: 185.88336935944793,
+        &quot;output_tokens_per_joule&quot;: 4.465538816620038,
+        &quot;source_phases&quot;: [
+          &quot;concurrency-c4-rep2&quot;,
+          &quot;concurrency-c4-rep3&quot;
+        ]
+      },
+      {
+        &quot;active_power_samples&quot;: 30,
+        &quot;active_utilization_threshold_pct&quot;: 10.0,
+        &quot;concurrency&quot;: 8,
+        &quot;joules_per_1k_output_tokens&quot;: 167.91722593885817,
+        &quot;mean_active_power_w&quot;: 45.138666666666666,
+        &quot;output_throughput_tok_s&quot;: 268.814985563795,
+        &quot;output_tokens_per_joule&quot;: 5.955315152503286,
+        &quot;source_phases&quot;: [
+          &quot;concurrency-c8-rep2&quot;,
+          &quot;concurrency-c8-rep3&quot;
+        ]
+      },
+      {
+        &quot;active_power_samples&quot;: 49,
+        &quot;active_utilization_threshold_pct&quot;: 10.0,
+        &quot;concurrency&quot;: 16,
+        &quot;joules_per_1k_output_tokens&quot;: 153.03650531765516,
+        &quot;mean_active_power_w&quot;: 43.70918367346939,
+        &quot;output_throughput_tok_s&quot;: 285.6127927303555,
+        &quot;output_tokens_per_joule&quot;: 6.5343886278918735,
+        &quot;source_phases&quot;: [
+          &quot;concurrency-c16-rep2&quot;,
+          &quot;concurrency-c16-rep3&quot;
+        ]
+      },
+      {
+        &quot;active_power_samples&quot;: 82,
+        &quot;active_utilization_threshold_pct&quot;: 10.0,
+        &quot;concurrency&quot;: 32,
+        &quot;joules_per_1k_output_tokens&quot;: 129.97668647655414,
+        &quot;mean_active_power_w&quot;: 44.735365853658536,
+        &quot;output_throughput_tok_s&quot;: 344.1799223103609,
+        &quot;output_tokens_per_joule&quot;: 7.693687438172885,
+        &quot;source_phases&quot;: [
+          &quot;concurrency-c32-rep2&quot;,
+          &quot;concurrency-c32-rep3&quot;
+        ]
+      }
+    ]
+  },
+  &quot;gsm8k&quot;: {
+    &quot;exact_match_flexible_extract&quot;: 0.8673237300985596,
+    &quot;exact_match_flexible_extract_stderr&quot;: 0.009343929131442217,
+    &quot;exact_match_strict_match&quot;: 0.0,
+    &quot;exact_match_strict_match_stderr&quot;: 0.0,
+    &quot;lm_eval_version&quot;: 3.0,
+    &quot;model&quot;: &quot;local-chat-completions&quot;,
+    &quot;model_args&quot;: {
+      &quot;base_url&quot;: &quot;http://127.0.0.1:18080/v1/chat/completions&quot;,
+      &quot;max_retries&quot;: 3,
+      &quot;model&quot;: &quot;Qwen3.6-35B-A3B-NVFP4-Fast&quot;,
+      &quot;num_concurrent&quot;: 8,
+      &quot;tokenized_requests&quot;: false
+    },
+    &quot;num_fewshot&quot;: 0,
+    &quot;sample_count&quot;: 1319,
+    &quot;source_file&quot;: &quot;raw/Qwen3.6-35B-A3B-NVFP4-Fast/results_2026-07-10T15-21-32.571448.json&quot;,
+    &quot;task&quot;: &quot;gsm8k&quot;
+  },
+  &quot;llama_benchy&quot;: {
+    &quot;benchmarks&quot;: [
+      {
+        &quot;concurrency&quot;: 1,
+        &quot;context_size&quot;: 0,
+        &quot;e2e_ttft&quot;: {
+          &quot;mean&quot;: 405.60253633884713,
+          &quot;std&quot;: 1.7691346824830672,
+          &quot;values&quot;: [
+            408.1036870193202,
+            404.29773699725047,
+            404.4061849999707
+          ]
+        },
+        &quot;est_ppt&quot;: {
+          &quot;mean&quot;: 403.17221333195147,
+          &quot;std&quot;: 1.7691346824830672,
+          &quot;values&quot;: [
+            405.67336401242454,
+            401.8674139903548,
+            401.97586199307506
+          ]
+        },
+        &quot;is_context_prefill_phase&quot;: false,
+        &quot;peak_req_throughput&quot;: {
+          &quot;mean&quot;: 80.33333333333333,
+          &quot;std&quot;: 5.185449728701348,
+          &quot;values&quot;: [
+            73.0,
+            84.0,
+            84.0
+          ]
+        },
+        &quot;peak_throughput&quot;: {
+          &quot;mean&quot;: 80.33333333333333,
+          &quot;std&quot;: 5.185449728701348,
+          &quot;values&quot;: [
+            73.0,
+            84.0,
+            84.0
+          ]
+        },
+        &quot;pp_req_throughput&quot;: {
+          &quot;mean&quot;: 5081.463799226791,
+          &quot;std&quot;: 21.69645181140233,
+          &quot;values&quot;: [
+            5050.861559491605,
+            5098.696556793177,
+            5094.833281395591
+          ]
+        },
+        &quot;pp_throughput&quot;: {
+          &quot;mean&quot;: 5081.463799226791,
+          &quot;std&quot;: 21.69645181140233,
+          &quot;values&quot;: [
+            5050.861559491605,
+            5098.696556793177,
+            5094.833281395591
+          ]
+        },
+        &quot;prompt_size&quot;: 2048,
+        &quot;requests_throughput_over_time&quot;: null,
+        &quot;response_size&quot;: 128,
+        &quot;tg_req_throughput&quot;: {
+          &quot;mean&quot;: 79.70321613096917,
+          &quot;std&quot;: 4.319484299197631,
+          &quot;values&quot;: [
+            73.61819858614477,
+            82.28060338602634,
+            83.21084642073642
+          ]
+        },
+        &quot;tg_throughput&quot;: {
+          &quot;mean&quot;: 79.70321613096917,
+          &quot;std&quot;: 4.319484299197631,
+          &quot;values&quot;: [
+            73.61819858614477,
+            82.28060338602634,
+            83.21084642073642
+          ]
+        },
+        &quot;throughput_over_time&quot;: null,
+        &quot;ttfr&quot;: {
+          &quot;mean&quot;: 405.60253633884713,
+          &quot;std&quot;: 1.7691346824830672,
+          &quot;values&quot;: [
+            408.1036870193202,
+            404.29773699725047,
+            404.4061849999707
+          ]
+        }
+      },
+      {
+        &quot;concurrency&quot;: 1,
+        &quot;context_size&quot;: 4096,
+        &quot;e2e_ttft&quot;: {
+          &quot;mean&quot;: 939.4710996712092,
+          &quot;std&quot;: 43.819284074054416,
+          &quot;values&quot;: [
+            1000.9007189946715,
+            915.8270670159254,
+            901.6855130030308
+          ]
+        },
+        &quot;est_ppt&quot;: {
+          &quot;mean&quot;: 937.0407766643135,
+          &quot;std&quot;: 43.819284074054416,
+          &quot;values&quot;: [
+            998.4703959877758,
+            913.3967440090297,
+            899.2551899961351
+          ]
+        },
+        &quot;is_context_prefill_phase&quot;: false,
+        &quot;peak_req_throughput&quot;: {
+          &quot;mean&quot;: 90.0,
+          &quot;std&quot;: 4.546060565661952,
+          &quot;values&quot;: [
+            85.0,
+            96.0,
+            89.0
+          ]
+        },
+        &quot;peak_throughput&quot;: {
+          &quot;mean&quot;: 90.0,
+          &quot;std&quot;: 4.546060565661952,
+          &quot;values&quot;: [
+            85.0,
+            96.0,
+            89.0
+          ]
+        },
+        &quot;pp_req_throughput&quot;: {
+          &quot;mean&quot;: 6571.419763185452,
+          &quot;std&quot;: 297.1830350973099,
+          &quot;values&quot;: [
+            6155.415348013228,
+            6727.635105232269,
+            6831.2088363108605
+          ]
+        },
+        &quot;pp_throughput&quot;: {
+          &quot;mean&quot;: 6571.419763185452,
+          &quot;std&quot;: 297.1830350973099,
+          &quot;values&quot;: [
+            6155.415348013228,
+            6727.635105232269,
+            6831.2088363108605
+          ]
+        },
+        &quot;prompt_size&quot;: 2048,
+        &quot;requests_throughput_over_time&quot;: null,
+        &quot;response_size&quot;: 128,
+        &quot;tg_req_throughput&quot;: {
+          &quot;mean&quot;: 86.67770937313361,
+          &quot;std&quot;: 0.8696241813630902,
+          &quot;values&quot;: [
+            85.44910003510596,
+            87.33953925756587,
+            87.24448882672901
+          ]
+        },
+        &quot;tg_throughput&quot;: {
+          &quot;mean&quot;: 86.67770937313361,
+          &quot;std&quot;: 0.8696241813630902,
+          &quot;values&quot;: [
+            85.44910003510596,
+            87.33953925756587,
+            87.24448882672901
+          ]
+        },
+        &quot;throughput_over_time&quot;: null,
+        &quot;ttfr&quot;: {
+          &quot;mean&quot;: 939.4710996712092,
+          &quot;std&quot;: 43.819284074054416,
+          &quot;values&quot;: [
+            1000.9007189946715,
+            915.8270670159254,
+            901.6855130030308
+          ]
+        }
+      },
+      {
+        &quot;concurrency&quot;: 1,
+        &quot;context_size&quot;: 8192,
+        &quot;e2e_ttft&quot;: {
+          &quot;mean&quot;: 1651.2375550034146,
+          &quot;std&quot;: 3.3099971260866017,
+          &quot;values&quot;: [
+            1655.147775018122,
+            1647.0538229914382,
+            1651.5110670006834
+          ]
+        },
+        &quot;est_ppt&quot;: {
+          &quot;mean&quot;: 1648.8072319965188,
+          &quot;std&quot;: 3.3099971260866017,
+          &quot;values&quot;: [
+            1652.7174520112264,
+            1644.6234999845426,
+            1649.0807439937878
+          ]
+        },
+        &quot;is_context_prefill_phase&quot;: false,
+        &quot;peak_req_throughput&quot;: {
+          &quot;mean&quot;: 86.66666666666667,
+          &quot;std&quot;: 5.557777333511022,
+          &quot;values&quot;: [
+            79.0,
+            89.0,
+            92.0
+          ]
+        },
+        &quot;peak_throughput&quot;: {
+          &quot;mean&quot;: 86.66666666666667,
+          &quot;std&quot;: 5.557777333511022,
+          &quot;values&quot;: [
+            79.0,
+            89.0,
+            92.0
+          ]
+        },
+        &quot;pp_req_throughput&quot;: {
+          &quot;mean&quot;: 6210.979552924935,
+          &quot;std&quot;: 12.492496326681563,
+          &quot;values&quot;: [
+            6196.461462627815,
+            6226.957112127033,
+            6209.520084019958
+          ]
+        },
+        &quot;pp_throughput&quot;: {
+          &quot;mean&quot;: 6210.979552924935,
+          &quot;std&quot;: 12.492496326681563,
+          &quot;values&quot;: [
+            6196.461462627815,
+            6226.957112127033,
+            6209.520084019958
+          ]
+        },
+        &quot;prompt_size&quot;: 2048,
+        &quot;requests_throughput_over_time&quot;: null,
+        &quot;response_size&quot;: 128,
+        &quot;tg_req_throughput&quot;: {
+          &quot;mean&quot;: 85.29783898015108,
+          &quot;std&quot;: 6.417290266952625,
+          &quot;values&quot;: [
+            76.3435271291819,
+            88.49528946602007,
+            91.0547003452513
+          ]
+        },
+        &quot;tg_throughput&quot;: {
+          &quot;mean&quot;: 85.29783898015108,
+          &quot;std&quot;: 6.417290266952625,
+          &quot;values&quot;: [
+            76.3435271291819,
+            88.49528946602007,
+            91.0547003452513
+          ]
+        },
+        &quot;throughput_over_time&quot;: null,
+        &quot;ttfr&quot;: {
+          &quot;mean&quot;: 1651.2375550034146,
+          &quot;std&quot;: 3.3099971260866017,
+          &quot;values&quot;: [
+            1655.147775018122,
+            1647.0538229914382,
+            1651.5110670006834
+          ]
+        }
+      },
+      {
+        &quot;concurrency&quot;: 1,
+        &quot;context_size&quot;: 16384,
+        &quot;e2e_ttft&quot;: {
+          &quot;mean&quot;: 3340.0704186739554,
+          &quot;std&quot;: 69.14837593357608,
+          &quot;values&quot;: [
+            3433.1570560170803,
+            3319.4771540001966,
+            3267.5770460045896
+          ]
+        },
+        &quot;est_ppt&quot;: {
+          &quot;mean&quot;: 3336.6083319997415,
+          &quot;std&quot;: 67.76090426001271,
+          &quot;values&quot;: [
+            3427.6314420082294,
+            3317.046830993301,
+            3265.146722997694
+          ]
+        },
+        &quot;is_context_prefill_phase&quot;: false,
+        &quot;peak_req_throughput&quot;: {
+          &quot;mean&quot;: 94.66666666666667,
+          &quot;std&quot;: 1.699673171197595,
+          &quot;values&quot;: [
+            94.0,
+            93.0,
+            97.0
+          ]
+        },
+        &quot;peak_throughput&quot;: {
+          &quot;mean&quot;: 94.66666666666667,
+          &quot;std&quot;: 1.699673171197595,
+          &quot;values&quot;: [
+            94.0,
+            93.0,
+            97.0
+          ]
+        },
+        &quot;pp_req_throughput&quot;: {
+          &quot;mean&quot;: 5526.932458795436,
+          &quot;std&quot;: 111.31595110638119,
+          &quot;values&quot;: [
+            5378.057796435554,
+            5557.051479577747,
+            5645.688100373008
+          ]
+        },
+        &quot;pp_throughput&quot;: {
+          &quot;mean&quot;: 5526.932458795436,
+          &quot;std&quot;: 111.31595110638119,
+          &quot;values&quot;: [
+            5378.057796435554,
+            5557.051479577747,
+            5645.688100373008
+          ]
+        },
+        &quot;prompt_size&quot;: 2048,
+        &quot;requests_throughput_over_time&quot;: null,
+        &quot;response_size&quot;: 128,
+        &quot;tg_req_throughput&quot;: {
+          &quot;mean&quot;: 87.01374562685254,
+          &quot;std&quot;: 2.2351720992573947,
+          &quot;values&quot;: [
+            87.61911385011383,
+            89.3979069621442,
+            84.02421606829958
+          ]
+        },
+        &quot;tg_throughput&quot;: {
+          &quot;mean&quot;: 87.01374562685254,
+          &quot;std&quot;: 2.2351720992573947,
+          &quot;values&quot;: [
+            87.61911385011383,
+            89.3979069621442,
+            84.02421606829958
+          ]
+        },
+        &quot;throughput_over_time&quot;: null,
+        &quot;ttfr&quot;: {
+          &quot;mean&quot;: 3339.0386550066373,
+          &quot;std&quot;: 67.76090426001271,
+          &quot;values&quot;: [
+            3430.0617650151253,
+            3319.4771540001966,
+            3267.5770460045896
+          ]
+        }
+      }
+    ],
+    &quot;latency_mode&quot;: &quot;api&quot;,
+    &quot;latency_ms&quot;: 2.4303230068956814,
+    &quot;max_concurrency&quot;: 1,
+    &quot;model&quot;: &quot;Qwen3.6-35B-A3B-NVFP4-Fast&quot;,
+    &quot;prefix_caching_enabled&quot;: false,
+    &quot;timestamp&quot;: &quot;2026-07-10 15:22:45Z&quot;,
+    &quot;version&quot;: &quot;0.4.0&quot;
+  },
+  &quot;runtime&quot;: {
+    &quot;effective_cuda_graph_mode&quot;: &quot;PIECEWISE&quot;,
+    &quot;generated_at_utc&quot;: &quot;2026-07-10T15:48:06.675848+00:00&quot;,
+    &quot;hardware&quot;: {
+      &quot;architecture&quot;: &quot;aarch64&quot;,
+      &quot;compute_capability&quot;: &quot;12.1&quot;,
+      &quot;gpu&quot;: &quot;NVIDIA GB10&quot;,
+      &quot;power_limit_w&quot;: null
+    },
+    &quot;image_id&quot;: &quot;sha256:f9d8f77b6656ddf60e8792242530dd2b9c43ef78bff364b90b82fd01d9cfd444&quot;,
+    &quot;kv_cache_tokens&quot;: 5960499,
+    &quot;max_model_len&quot;: 65536,
+    &quot;model&quot;: &quot;unsloth/Qwen3.6-35B-A3B-NVFP4-Fast&quot;,
+    &quot;model_revision&quot;: &quot;11fb65d632976b5f00cb42f157562238cf0c71e0&quot;,
+    &quot;mtp_acceptance_rate&quot;: 0.8632968904099196,
+    &quot;mtp_accepted_tokens_total&quot;: 409662.0,
+    &quot;mtp_draft_tokens_total&quot;: 474532.0,
+    &quot;native_marker_gate&quot;: {
+      &quot;compressed_tensors&quot;: true,
+      &quot;draft_moe_triton&quot;: true,
+      &quot;effective_piecewise&quot;: true,
+      &quot;flashinfer_attention&quot;: true,
+      &quot;fp8_dense&quot;: true,
+      &quot;nvfp4_dense&quot;: true,
+      &quot;target_moe_b12x&quot;: true
+    },
+    &quot;profile&quot;: {
+      &quot;ATTENTION_BACKEND&quot;: &quot;flashinfer&quot;,
+      &quot;GPU_MEMORY_UTILIZATION&quot;: &quot;0.90&quot;,
+      &quot;KV_CACHE_DTYPE&quot;: &quot;fp8&quot;,
+      &quot;LANGUAGE_MODEL_ONLY&quot;: &quot;1&quot;,
+      &quot;LINEAR_BACKEND&quot;: &quot;auto&quot;,
+      &quot;MAX_MODEL_LEN&quot;: &quot;65536&quot;,
+      &quot;MAX_NUM_BATCHED_TOKENS&quot;: &quot;32768&quot;,
+      &quot;MAX_NUM_SEQS&quot;: &quot;32&quot;,
+      &quot;MOE_BACKEND&quot;: &quot;flashinfer_b12x&quot;,
+      &quot;SPECULATIVE_CONFIG&quot;: &quot;{\&quot;method\&quot;:\&quot;mtp\&quot;,\&quot;num_speculative_tokens\&quot;:2,\&quot;moe_backend\&quot;:\&quot;triton\&quot;}&quot;
+    },
+    &quot;runtime&quot;: {
+      &quot;cuda&quot;: &quot;13.0&quot;,
+      &quot;flashinfer&quot;: &quot;0.6.12&quot;,
+      &quot;torch&quot;: &quot;2.11.0+cu130&quot;,
+      &quot;vllm&quot;: &quot;0.24.1.dev0+gee0da84ab.d20260702&quot;
+    },
+    &quot;semantic_profile&quot;: &quot;FP8 KV + MTP K=2; NVFP4 KV rejected by semantic gate&quot;,
+    &quot;served_model&quot;: &quot;Qwen3.6-35B-A3B-NVFP4-Fast&quot;
+  },
+  &quot;telemetry&quot;: {
+    &quot;phases&quot;: {
+      &quot;concurrency-c1-rep1&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 80.94642857142857,
+        &quot;power_w_max&quot;: 43.37,
+        &quot;power_w_mean&quot;: 34.85625,
+        &quot;power_w_p95&quot;: 43.12,
+        &quot;samples&quot;: 56,
+        &quot;temperature_c_max&quot;: 73.0,
+        &quot;temperature_c_mean&quot;: 65.07142857142857
+      },
+      &quot;concurrency-c1-rep2&quot;: {
+        &quot;gpu_util_pct_max&quot;: 95.0,
+        &quot;gpu_util_pct_mean&quot;: 69.36507936507937,
+        &quot;power_w_max&quot;: 43.65,
+        &quot;power_w_mean&quot;: 31.865238095238094,
+        &quot;power_w_p95&quot;: 42.33,
+        &quot;samples&quot;: 63,
+        &quot;temperature_c_max&quot;: 67.0,
+        &quot;temperature_c_mean&quot;: 64.73015873015873
+      },
+      &quot;concurrency-c1-rep3&quot;: {
+        &quot;gpu_util_pct_max&quot;: 93.0,
+        &quot;gpu_util_pct_mean&quot;: 80.03703703703704,
+        &quot;power_w_max&quot;: 43.45,
+        &quot;power_w_mean&quot;: 35.08444444444444,
+        &quot;power_w_p95&quot;: 39.72,
+        &quot;samples&quot;: 27,
+        &quot;temperature_c_max&quot;: 67.0,
+        &quot;temperature_c_mean&quot;: 66.0
+      },
+      &quot;concurrency-c16-rep1&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 63.34285714285714,
+        &quot;power_w_max&quot;: 60.87,
+        &quot;power_w_mean&quot;: 36.49914285714286,
+        &quot;power_w_p95&quot;: 55.97,
+        &quot;samples&quot;: 35,
+        &quot;temperature_c_max&quot;: 73.0,
+        &quot;temperature_c_mean&quot;: 67.88571428571429
+      },
+      &quot;concurrency-c16-rep2&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 51.627906976744185,
+        &quot;power_w_max&quot;: 59.25,
+        &quot;power_w_mean&quot;: 32.06418604651163,
+        &quot;power_w_p95&quot;: 49.59,
+        &quot;samples&quot;: 43,
+        &quot;temperature_c_max&quot;: 70.0,
+        &quot;temperature_c_mean&quot;: 63.95348837209303
+      },
+      &quot;concurrency-c16-rep3&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 47.95348837209303,
+        &quot;power_w_max&quot;: 56.29,
+        &quot;power_w_mean&quot;: 31.32488372093023,
+        &quot;power_w_p95&quot;: 52.02,
+        &quot;samples&quot;: 43,
+        &quot;temperature_c_max&quot;: 68.0,
+        &quot;temperature_c_mean&quot;: 62.51162790697674
+      },
+      &quot;concurrency-c2-rep1&quot;: {
+        &quot;gpu_util_pct_max&quot;: 94.0,
+        &quot;gpu_util_pct_mean&quot;: 68.6,
+        &quot;power_w_max&quot;: 47.46,
+        &quot;power_w_mean&quot;: 34.4265,
+        &quot;power_w_p95&quot;: 44.73,
+        &quot;samples&quot;: 20,
+        &quot;temperature_c_max&quot;: 68.0,
+        &quot;temperature_c_mean&quot;: 66.1
+      },
+      &quot;concurrency-c2-rep2&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 83.05555555555556,
+        &quot;power_w_max&quot;: 49.67,
+        &quot;power_w_mean&quot;: 36.306666666666665,
+        &quot;power_w_p95&quot;: 48.84,
+        &quot;samples&quot;: 18,
+        &quot;temperature_c_max&quot;: 68.0,
+        &quot;temperature_c_mean&quot;: 66.5
+      },
+      &quot;concurrency-c2-rep3&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 84.26315789473684,
+        &quot;power_w_max&quot;: 47.54,
+        &quot;power_w_mean&quot;: 36.444736842105264,
+        &quot;power_w_p95&quot;: 47.41,
+        &quot;samples&quot;: 19,
+        &quot;temperature_c_max&quot;: 69.0,
+        &quot;temperature_c_mean&quot;: 67.05263157894737
+      },
+      &quot;concurrency-c32-rep1&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 52.68571428571428,
+        &quot;power_w_max&quot;: 56.5,
+        &quot;power_w_mean&quot;: 33.275285714285715,
+        &quot;power_w_p95&quot;: 51.57,
+        &quot;samples&quot;: 70,
+        &quot;temperature_c_max&quot;: 69.0,
+        &quot;temperature_c_mean&quot;: 62.65714285714286
+      },
+      &quot;concurrency-c32-rep2&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 41.2,
+        &quot;power_w_max&quot;: 57.13,
+        &quot;power_w_mean&quot;: 28.991882352941175,
+        &quot;power_w_p95&quot;: 51.02,
+        &quot;samples&quot;: 85,
+        &quot;temperature_c_max&quot;: 68.0,
+        &quot;temperature_c_mean&quot;: 59.43529411764706
+      },
+      &quot;concurrency-c32-rep3&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 41.829268292682926,
+        &quot;power_w_max&quot;: 59.43,
+        &quot;power_w_mean&quot;: 29.563536585365853,
+        &quot;power_w_p95&quot;: 51.44,
+        &quot;samples&quot;: 82,
+        &quot;temperature_c_max&quot;: 68.0,
+        &quot;temperature_c_mean&quot;: 58.76829268292683
+      },
+      &quot;concurrency-c4-rep1&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 80.0,
+        &quot;power_w_max&quot;: 57.68,
+        &quot;power_w_mean&quot;: 38.34615384615385,
+        &quot;power_w_p95&quot;: 47.03,
+        &quot;samples&quot;: 13,
+        &quot;temperature_c_max&quot;: 72.0,
+        &quot;temperature_c_mean&quot;: 67.53846153846153
+      },
+      &quot;concurrency-c4-rep2&quot;: {
+        &quot;gpu_util_pct_max&quot;: 95.0,
+        &quot;gpu_util_pct_mean&quot;: 71.46153846153847,
+        &quot;power_w_max&quot;: 56.42,
+        &quot;power_w_mean&quot;: 35.80230769230769,
+        &quot;power_w_p95&quot;: 39.92,
+        &quot;samples&quot;: 13,
+        &quot;temperature_c_max&quot;: 69.0,
+        &quot;temperature_c_mean&quot;: 66.92307692307692
+      },
+      &quot;concurrency-c4-rep3&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 73.71428571428571,
+        &quot;power_w_max&quot;: 54.45,
+        &quot;power_w_mean&quot;: 36.28142857142857,
+        &quot;power_w_p95&quot;: 50.1,
+        &quot;samples&quot;: 14,
+        &quot;temperature_c_max&quot;: 72.0,
+        &quot;temperature_c_mean&quot;: 67.07142857142857
+      },
+      &quot;concurrency-c8-rep1&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 82.41176470588235,
+        &quot;power_w_max&quot;: 59.65,
+        &quot;power_w_mean&quot;: 41.313529411764705,
+        &quot;power_w_p95&quot;: 52.86,
+        &quot;samples&quot;: 17,
+        &quot;temperature_c_max&quot;: 72.0,
+        &quot;temperature_c_mean&quot;: 68.58823529411765
+      },
+      &quot;concurrency-c8-rep2&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 78.33333333333333,
+        &quot;power_w_max&quot;: 56.98,
+        &quot;power_w_mean&quot;: 40.67388888888889,
+        &quot;power_w_p95&quot;: 53.64,
+        &quot;samples&quot;: 18,
+        &quot;temperature_c_max&quot;: 72.0,
+        &quot;temperature_c_mean&quot;: 68.61111111111111
+      },
+      &quot;concurrency-c8-rep3&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 83.94117647058823,
+        &quot;power_w_max&quot;: 53.8,
+        &quot;power_w_mean&quot;: 41.91705882352941,
+        &quot;power_w_p95&quot;: 52.14,
+        &quot;samples&quot;: 17,
+        &quot;temperature_c_max&quot;: 74.0,
+        &quot;temperature_c_mean&quot;: 69.52941176470588
+      },
+      &quot;concurrency-complete&quot;: {
+        &quot;gpu_util_pct_max&quot;: 0.0,
+        &quot;gpu_util_pct_mean&quot;: 0.0,
+        &quot;power_w_max&quot;: 13.85,
+        &quot;power_w_mean&quot;: 13.424782608695653,
+        &quot;power_w_p95&quot;: 13.81,
+        &quot;samples&quot;: 23,
+        &quot;temperature_c_max&quot;: 54.0,
+        &quot;temperature_c_mean&quot;: 51.82608695652174
+      },
+      &quot;gsm8k-complete&quot;: {
+        &quot;gpu_util_pct_max&quot;: 0.0,
+        &quot;gpu_util_pct_mean&quot;: 0.0,
+        &quot;power_w_max&quot;: 16.36,
+        &quot;power_w_mean&quot;: 15.995714285714286,
+        &quot;power_w_p95&quot;: 16.21,
+        &quot;samples&quot;: 7,
+        &quot;temperature_c_max&quot;: 67.0,
+        &quot;temperature_c_mean&quot;: 64.42857142857143
+      },
+      &quot;gsm8k-full-0shot&quot;: {
+        &quot;gpu_util_pct_max&quot;: 95.0,
+        &quot;gpu_util_pct_mean&quot;: 94.10969793322735,
+        &quot;power_w_max&quot;: 46.92,
+        &quot;power_w_mean&quot;: 43.87945945945946,
+        &quot;power_w_p95&quot;: 45.44,
+        &quot;samples&quot;: 629,
+        &quot;temperature_c_max&quot;: 75.0,
+        &quot;temperature_c_mean&quot;: 71.0476947535771
+      },
+      &quot;gsm8k-smoke&quot;: {
+        &quot;gpu_util_pct_max&quot;: 94.0,
+        &quot;gpu_util_pct_mean&quot;: 10.263157894736842,
+        &quot;power_w_max&quot;: 36.47,
+        &quot;power_w_mean&quot;: 15.294210526315789,
+        &quot;power_w_p95&quot;: 34.72,
+        &quot;samples&quot;: 38,
+        &quot;temperature_c_max&quot;: 55.0,
+        &quot;temperature_c_mean&quot;: 49.89473684210526
+      },
+      &quot;idle&quot;: {
+        &quot;gpu_util_pct_max&quot;: 0.0,
+        &quot;gpu_util_pct_mean&quot;: 0.0,
+        &quot;power_w_max&quot;: 13.06,
+        &quot;power_w_mean&quot;: 12.99875,
+        &quot;power_w_p95&quot;: 13.03,
+        &quot;samples&quot;: 8,
+        &quot;temperature_c_max&quot;: 50.0,
+        &quot;temperature_c_mean&quot;: 49.5
+      },
+      &quot;llama-benchy-complete&quot;: {
+        &quot;gpu_util_pct_max&quot;: 0.0,
+        &quot;gpu_util_pct_mean&quot;: 0.0,
+        &quot;power_w_max&quot;: 16.2,
+        &quot;power_w_mean&quot;: 15.9,
+        &quot;power_w_p95&quot;: 15.97,
+        &quot;samples&quot;: 5,
+        &quot;temperature_c_max&quot;: 65.0,
+        &quot;temperature_c_mean&quot;: 63.8
+      },
+      &quot;llama-benchy-depth-sweep&quot;: {
+        &quot;gpu_util_pct_max&quot;: 96.0,
+        &quot;gpu_util_pct_mean&quot;: 83.62068965517241,
+        &quot;power_w_max&quot;: 69.35,
+        &quot;power_w_mean&quot;: 45.64931034482758,
+        &quot;power_w_p95&quot;: 65.95,
+        &quot;samples&quot;: 29,
+        &quot;temperature_c_max&quot;: 81.0,
+        &quot;temperature_c_mean&quot;: 70.0
+      }
+    },
+    &quot;source&quot;: &quot;telemetry.jsonl&quot;
+  }
+}</pre></details>
+<div class="footer">Prepared by DSpark · r0b0tlab · correctness before throughput · generated from machine-readable artifacts</div></main></body></html>

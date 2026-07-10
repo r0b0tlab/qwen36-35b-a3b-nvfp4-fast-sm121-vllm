@@ -1,0 +1,19 @@
+{
+  "task": "gsm8k",
+  "num_fewshot": 0,
+  "sample_count": 1319,
+  "exact_match_flexible_extract": 0.8673237300985596,
+  "exact_match_flexible_extract_stderr": 0.009343929131442217,
+  "exact_match_strict_match": 0.0,
+  "exact_match_strict_match_stderr": 0.0,
+  "lm_eval_version": 3.0,
+  "model": "local-chat-completions",
+  "model_args": {
+    "model": "Qwen3.6-35B-A3B-NVFP4-Fast",
+    "base_url": "http://127.0.0.1:18080/v1/chat/completions",
+    "num_concurrent": 8,
+    "max_retries": 3,
+    "tokenized_requests": false
+  },
+  "source_file": "raw/Qwen3.6-35B-A3B-NVFP4-Fast/results_2026-07-10T15-21-32.571448.json"
+}

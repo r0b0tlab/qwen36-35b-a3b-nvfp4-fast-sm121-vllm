@@ -1,0 +1,30 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "Qwen3.6-35B-A3B-NVFP4-Fast",
+      "object": "model",
+      "created": 1783698466,
+      "owned_by": "vllm",
+      "root": "/models/model",
+      "parent": null,
+      "max_model_len": 65536,
+      "permission": [
+        {
+          "id": "modelperm-8f3df976adfc2432",
+          "object": "model_permission",
+          "created": 1783698466,
+          "allow_create_engine": false,
+          "allow_sampling": true,
+          "allow_logprobs": true,
+          "allow_search_indices": false,
+          "allow_view": true,
+          "allow_fine_tuning": false,
+          "organization": "*",
+          "group": null,
+          "is_blocking": false
+        }
+      ]
+    }
+  ]
+}
