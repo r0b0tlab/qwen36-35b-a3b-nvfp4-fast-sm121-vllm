@@ -108,12 +108,20 @@ export IMAGE=ghcr.io/r0b0tlab/qwen36-35b-a3b-nvfp4-fast-sm121-vllm:latest
 docker run --rm --gpus all \
   --name qwen36-fast-vllm \
   --network host --ipc host --shm-size 32g \
-  -e MODEL_PATH=/models/model \
+  -e MODEL_ID=/models/model \
   -e PORT=18080 \
   -v "$MODEL_DIR:/models/model:ro" \
   -v "$HOME/.cache/qwen36-fast-vllm:/root/.cache" \
   "$IMAGE"
 ```
+
+The exact benchmarked image is public and anonymously pullable by immutable manifest digest:
+
+```bash
+docker pull ghcr.io/r0b0tlab/qwen36-35b-a3b-nvfp4-fast-sm121-vllm@sha256:3361f68b966ae84940c068aa7fd522078fd7f3cb087c506edee93041ce031892
+```
+
+`latest` and `v0.1.0` resolve to this release. Anonymous manifest access and an anonymous digest pull were verified on 2026-07-10.
 
 The image defaults to the validated profile. Override values deliberately rather than copying an experimental profile:
 

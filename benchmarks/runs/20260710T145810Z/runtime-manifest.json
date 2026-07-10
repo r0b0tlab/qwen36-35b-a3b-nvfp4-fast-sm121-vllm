@@ -17,6 +17,12 @@
     "flashinfer": "0.6.12"
   },
   "image_id": "sha256:f9d8f77b6656ddf60e8792242530dd2b9c43ef78bff364b90b82fd01d9cfd444",
+  "registry": {
+    "image": "ghcr.io/r0b0tlab/qwen36-35b-a3b-nvfp4-fast-sm121-vllm",
+    "tags": ["latest", "v0.1.0"],
+    "manifest_digest": "sha256:3361f68b966ae84940c068aa7fd522078fd7f3cb087c506edee93041ce031892",
+    "anonymous_pull_verified_at_utc": "2026-07-10T16:14:09Z"
+  },
   "profile": {
     "KV_CACHE_DTYPE": "fp8",
     "MOE_BACKEND": "flashinfer_b12x",

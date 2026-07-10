@@ -11,7 +11,7 @@
 <h2>Quality gate</h2><div class="two"><div class="panel"><div class="kpi"><div class="l">Flexible-extract exact match</div><div class="v">86.73%</div></div><p>Full GSM8K, 1,319 questions, 0-shot, greedy decoding, chat template applied, thinking disabled. This is the publication metric; strict string matching is retained in raw data but is not the primary gate.</p></div><div class="panel"><h3>Semantic probes</h3><p class="status">Passed</p><p>Deterministic arithmetic, exact-string, and word-problem probes passed under FP8 KV with MTP. MTP counters were non-zero and acceptance was measured from server Prometheus metrics.</p><div class="callout warn"><strong>Rejected profile:</strong> NVFP4 KV + MTP changed prompt operands and produced punctuation degeneration. Readiness alone was not accepted as correctness.</div></div></div>
 <h2>Thermal & power envelope</h2><div class="grid4"><div class="kpi"><div class="l">Peak GPU utilization</div><div class="v">96%</div></div><div class="kpi"><div class="l">Peak temperature</div><div class="v">81°C</div></div><div class="kpi"><div class="l">C1 mean TPOT</div><div class="v">11.51 ms</div></div><div class="kpi"><div class="l">C1 P99 TTFT</div><div class="v">1,177.9 ms</div></div></div>
 <div class="panel" style="overflow:auto"><table><thead><tr><th>Load</th><th>Mean active power W</th><th>Output tokens/J</th><th>J/1K output tokens</th></tr></thead><tbody><tr><td>c1</td><td>36.9</td><td>2.18</td><td>458.1</td></tr><tr><td>c2</td><td>38.9</td><td>3.30</td><td>302.7</td></tr><tr><td>c4</td><td>41.6</td><td>4.47</td><td>223.9</td></tr><tr><td>c8</td><td>45.1</td><td>5.96</td><td>167.9</td></tr><tr><td>c16</td><td>43.7</td><td>6.53</td><td>153.0</td></tr><tr><td>c32</td><td>44.7</td><td>7.69</td><td>130.0</td></tr></tbody></table><p style="color:var(--muted)">Board power is sampled every two seconds during stable repetitions 2 and 3. Samples below 10% GPU utilization are excluded so client bookkeeping and post-generation idle time do not inflate efficiency.</p></div>
-<h2>Methodology & reproducibility</h2><div class="panel"><p><strong>Concurrency:</strong> random 2,048-token input / exact 512-token output, concurrencies 1–32, three repetitions; first repetition dropped and the final two averaged. <strong>Telemetry:</strong> 2-second nvidia-smi and host-memory sampling with benchmark phase labels. <strong>Runtime:</strong> one GB10, text-only model path, 65,536 maximum sequence length, no Marlin or emulation fallback.</p><p>Run ID: <code>20260710T145810Z</code> · Model revision: <code>11fb65d632976b5f00cb42f157562238cf0c71e0</code> · Image digest: <code>sha256:f9d8f77b6656ddf60e8792242530dd2b9c43ef78bff364b90b82fd01d9cfd444</code></p></div>
+<h2>Methodology & reproducibility</h2><div class="panel"><p><strong>Concurrency:</strong> random 2,048-token input / exact 512-token output, concurrencies 1–32, three repetitions; first repetition dropped and the final two averaged. <strong>Telemetry:</strong> 2-second nvidia-smi and host-memory sampling with benchmark phase labels. <strong>Runtime:</strong> one GB10, text-only model path, 65,536 maximum sequence length, no Marlin or emulation fallback.</p><p>Run ID: <code>20260710T145810Z</code> · Model revision: <code>11fb65d632976b5f00cb42f157562238cf0c71e0</code> · GHCR manifest: <code>sha256:3361f68b966ae84940c068aa7fd522078fd7f3cb087c506edee93041ce031892</code></p></div>
 <h2>Raw evidence</h2><details><summary>Embedded machine-readable benchmark payload</summary><pre>{
   &quot;concurrency&quot;: {
     &quot;method&quot;: &quot;vllm bench serve random 2048 input / 512 output / ignore_eos; three reps, first dropped&quot;,
@@ -642,6 +642,15 @@
       &quot;MAX_NUM_SEQS&quot;: &quot;32&quot;,
       &quot;MOE_BACKEND&quot;: &quot;flashinfer_b12x&quot;,
       &quot;SPECULATIVE_CONFIG&quot;: &quot;{\&quot;method\&quot;:\&quot;mtp\&quot;,\&quot;num_speculative_tokens\&quot;:2,\&quot;moe_backend\&quot;:\&quot;triton\&quot;}&quot;
+    },
+    &quot;registry&quot;: {
+      &quot;anonymous_pull_verified_at_utc&quot;: &quot;2026-07-10T16:14:09Z&quot;,
+      &quot;image&quot;: &quot;ghcr.io/r0b0tlab/qwen36-35b-a3b-nvfp4-fast-sm121-vllm&quot;,
+      &quot;manifest_digest&quot;: &quot;sha256:3361f68b966ae84940c068aa7fd522078fd7f3cb087c506edee93041ce031892&quot;,
+      &quot;tags&quot;: [
+        &quot;latest&quot;,
+        &quot;v0.1.0&quot;
+      ]
     },
     &quot;runtime&quot;: {
       &quot;cuda&quot;: &quot;13.0&quot;,
