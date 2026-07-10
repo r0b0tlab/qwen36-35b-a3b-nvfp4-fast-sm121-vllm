@@ -1,5 +1,6 @@
 .venv-bench/
 benchmarks/runs/**/raw/
+benchmarks/runs/**/gsm8k-smoke/
 benchmarks/runs/**/samples_*.jsonl
 benchmarks/runs/*/telemetry.jsonl
 benchmarks/runs/**/run.log

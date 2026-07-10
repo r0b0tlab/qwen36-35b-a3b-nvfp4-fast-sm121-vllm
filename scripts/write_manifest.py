@@ -6,13 +6,16 @@ import hashlib
 import sys
 from pathlib import Path
 
-EXCLUDED_NAMES = {"telemetry.jsonl", "run.log", "progress.jsonl", "MANIFEST.sha256"}
+EXCLUDED_NAMES = {
+    "telemetry.jsonl", "run.log", "progress.jsonl", "server.log", "MANIFEST.sha256"
+}
 
 
 def excluded(path: Path) -> bool:
     return (
         path.name in EXCLUDED_NAMES
         or "raw" in path.parts
+        or "gsm8k-smoke" in path.parts
         or (path.name.startswith("c") and "-r" in path.name and path.suffix == ".log")
     )
 
